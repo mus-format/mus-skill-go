@@ -1,0 +1,10 @@
+mode: custom
+int: raw
+uint: varint
+float: unsafe
+byte: raw
+bool: ord
+string: unsafe
+byte_slice: ord
+time: raw
+time_ser: TimeUnixUTC
