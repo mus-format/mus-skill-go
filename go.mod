@@ -1,4 +1,4 @@
-module github.com/mus-format/mus-gen-skill-go
+module github.com/mus-format/mus-skill-go
 
 go 1.24
 

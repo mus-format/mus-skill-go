@@ -9,7 +9,7 @@ With hints user can specify the serialization options for the type.
 ## Inner Hints
 
 [Inner Hints](./inner.md) these hints could be applied to the struct field type 
-or base type.
+or underlying type.
 
 ## Validator Functions
 

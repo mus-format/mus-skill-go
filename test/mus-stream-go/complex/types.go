@@ -3,8 +3,8 @@ package complex
 import (
 	"image"
 
-	"github.com/mus-format/mus-gen-skill-go/test/mus-stream-go/complex/sub1"
-	"github.com/mus-format/mus-gen-skill-go/test/mus-stream-go/complex/sub2"
+	"github.com/mus-format/mus-skill-go/test/mus-stream-go/complex/sub1"
+	"github.com/mus-format/mus-skill-go/test/mus-stream-go/complex/sub2"
 )
 
 // Should be able to handle a complex case.
@@ -23,7 +23,7 @@ type Foo struct {
 	Ptr     *int
 	Bar1    sub1.Bar
 	Bar2    sub2.Bar
-	// mus:path = github.com/mus-format/mus-gen-skill-go/test/mus-stream-go/complex/sers
+	// mus:path = github.com/mus-format/mus-skill-go/test/mus-stream-go/complex/sers
 	Point image.Point
 	Embedded
 	// mus:lenSer = raw.Int

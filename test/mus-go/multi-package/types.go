@@ -1,6 +1,6 @@
 package multipackage
 
-import bar "github.com/mus-format/mus-gen-skill-go/test/mus-go/multi-package/sub"
+import bar "github.com/mus-format/mus-skill-go/test/mus-go/multi-package/sub"
 
 // Should use a serializer from another package.
 

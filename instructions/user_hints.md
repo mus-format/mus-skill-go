@@ -110,9 +110,9 @@ type Foo struct {
 
 <!-- *********************************************************************** -->
 
-### Struct Field Type or Base Type
+### Struct Field Type or Underlying Type
 
-These hints could be applied to the struct field type or base type.
+These hints could be applied to the struct field type or underlying type.
 
 #### Number Encoding
 

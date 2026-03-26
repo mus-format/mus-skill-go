@@ -1,5 +1,5 @@
 ---
-name: mus-gen-skill-go
+name: mus-skill-go
 description: Generate MUS serializers for Go types.
 ---
 

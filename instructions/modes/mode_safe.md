@@ -4,8 +4,8 @@
 mode: safe
 int: varint
 uint: varint
-float: varint
-byte: varint
+float: raw
+byte, uint8: raw
 bool: ord
 string: ord
 byte_slice: ord
