@@ -8,6 +8,9 @@ serializers for Go.
 - [mus-skill-go: AI-Driven MUS Serializer Generation](#mus-skill-go-ai-driven-mus-serializer-generation)
   - [Contents](#contents)
   - [Setup](#setup)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Dependencies](#dependencies)
   - [Supported Types](#supported-types)
   - [Usage](#usage)
   - [What to Expect](#what-to-expect)
@@ -26,11 +29,36 @@ serializers for Go.
 
 ## Setup
 
-Clone this repository into your project's agent directory (e.g. `.agent` or 
-`.agents`):
+### Prerequisites
+
+- **Go 1.24** or later.
+- An AI agent with skill support (e.g., `Antigravity`).
+
+### Installation
+
+Clone this repository into your project's agent directory (e.g., `.agents/skills`):
 
 ```bash
-git clone https://github.com/mus-format/mus-skill-go .agent/mus-skill-go
+git clone https://github.com/mus-format/mus-skill-go .agents/skills/mus-skill-go
+```
+
+or use [skills](https://github.com/vercel-labs/skills) tool with the following 
+command:
+
+```bash
+npx skills add github.com/mus-format/mus-skill-go
+```
+
+### Dependencies
+
+Ensure you have the required MUS library installed in your Go project:
+
+```bash
+# buffer-based
+go get github.com/mus-format/mus-go
+
+# or stream-based
+go get github.com/mus-format/mus-stream-go
 ```
 
 ## Supported Types
