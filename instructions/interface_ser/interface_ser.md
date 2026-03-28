@@ -4,32 +4,14 @@ To generate a serializer for an interface type:
 1. If there is no `// mus:impls` hint, skip this type.
 2. For each implementation type listed in the `// mus:impls` hint:
    - Generate a common serializer (e.g., `FooMUS`).
-   - Generate a DTM constant (e.g., `FooDTM`) if it doesn't already exist.
-     Missing DTMs are generated in the `mus.ai.gen.go` file as a block, starting 
-     from 1:
-     ```go
-     const (
-       FooDTM com.DTM = iota + 1
-       BarDTM
-     )
-     ```
-   - Use the DTM constant to create a [Typed Serializer](./typed_ser.md) (e.g., 
+   - Generate a DTM constants (e.g., `FooDTM`) if needed, see 
+     [DTM Constants](./dtm.md).
+   - Use DTM constants to create a [Typed Serializers](./typed_ser.md) (e.g., 
     `FooTypedMUS`).
-3. Generate the interface serializer that uses these typed serializers.
+3. Generate the interface serializer that uses the generated typed serializers
+   and handles `// mus:marshaller = true` hint.
 
-
-> [!IMPORTANT]
-> **DTM Management**: Managing DTM conflicts is the **user's responsibility**. 
-> There are two supported modes:
-> 1. **User-defined DTMs**: The user provides all DTM constants manually.
-> 2. **Generated DTMs**: The generator handles all DTM constants starting from 1.
-
-> [!NOTE]
-> Either **all** implementation DTMs must be provided by the user, or **all** must 
-> be missing. If some are missing and some are present, output an error: "Partial 
-> DTMs for type_name.", where `type_name` is the interface name.
-
-Example:
+Example 1, without `// mus:marshaller = true` hint:
 
 ```go
 // User-provided source code:
@@ -40,21 +22,24 @@ const (
 )
 
 type Foo struct {...}
+func (f Foo) Method() {...}
+
 type Bar struct {...}
+func (b Bar) Method() {...}
 
 // mus:impls = Foo, Bar
-type MyInterface interface {
+type Interface interface {
   Method()
 }
 
 // -----------------------------------------------------------------------------
 // Generated code:
 
-var MyInterfaceMUS = myInterfaceMUS{}
+var InterfaceMUS = interfaceMUS{}
 
-type myInterfaceMUS struct{}
+type interfaceMUS struct{}
 
-func (s myInterfaceMUS) Marshal(v MyInterface, ... ) (n int) {
+func (s interfaceMUS) Marshal(v Interface, ... ) (n int) {
   switch val := v.(type) {
   case Foo:
     return FooTypedMUS.Marshal(val, ... )
@@ -65,7 +50,7 @@ func (s myInterfaceMUS) Marshal(v MyInterface, ... ) (n int) {
   }
 }
 
-func (s myInterfaceMUS) Unmarshal( ... ) (v MyInterface, n int, err error) {
+func (s interfaceMUS) Unmarshal( ... ) (v Interface, n int, err error) {
   dtm, n, err := typed.DTMSer.Unmarshal( ... )
   if err != nil {
     return
@@ -80,12 +65,12 @@ func (s myInterfaceMUS) Unmarshal( ... ) (v MyInterface, n int, err error) {
     v1, n1, err1 := BarTypedMUS.UnmarshalData( ... )
     return v1, n + n1, err1
   default:
-    err = common.ErrUnknownDTM
+		err = com.NewUnexpectedDTMError(dtm)
     return
   }
 }
 
-func (s myInterfaceMUS) Size(v MyInterface) (size int) {
+func (s interfaceMUS) Size( ... ) (size int) {
 	switch t := v.(type) {
 	case Foo:
 		return FooTypedMUS.Size(t)
@@ -96,7 +81,7 @@ func (s myInterfaceMUS) Size(v MyInterface) (size int) {
 	}
 }
 
-func (s myInterfaceMUS) Skip( ... ) (n int, err error) {
+func (s interfaceMUS) Skip( ... ) (n int, err error) {
 	dtm, n, err := typed.DTMSer.Unmarshal( ... )
 	if err != nil {
 		return
@@ -108,10 +93,96 @@ func (s myInterfaceMUS) Skip( ... ) (n int, err error) {
 	case BarDTM:
 		n1, err = BarTypedMUS.SkipData( ... )
 	default:
-    err = common.ErrUnknownDTM
+		err = com.NewUnexpectedDTMError(dtm)
 		return
 	}
 	n += n1
 	return
 } 
 ```
+
+Example 2, with `// mus:marshaller = true` hint:
+
+```go
+// User-provided source code:
+
+const (
+  FooDTM com.DTM = 1
+  BarDTM com.DTM = 2
+)
+
+type Foo struct {...}
+func (f Foo) Method() {...}
+
+type Bar struct {...}
+func (b Bar) Method() {...}
+
+// mus:impls = Foo, Bar
+// mus:marshaller = true
+type Interface interface {
+  Method()
+}
+
+// -----------------------------------------------------------------------------
+// Generated code:
+
+var InterfaceMUS = interfaceMUS{}
+
+type interfaceMUS struct{}
+
+func (s interfaceMUS) Marshal(v Interface, ... ) (n int) {
+	if m, ok := v.(mus.MarshallerTyped); ok {
+		return m.MarshalTypedMUS(bs)
+	}
+	panic(fmt.Sprintf("%v doesn't implement the mus.MarshallerTyped interface", reflect.TypeOf(v)))
+}
+
+func (s interfaceMUS) Unmarshal( ... ) (v Interface, n int, err error) {
+  dtm, n, err := typed.DTMSer.Unmarshal( ... )
+  if err != nil {
+    return
+  }
+  switch dtm {
+  case FooDTM:
+    var v1 Foo
+    v1, n1, err1 := FooTypedMUS.UnmarshalData( ... )
+    return v1, n + n1, err1
+  case BarDTM:
+    var v1 Bar
+    v1, n1, err1 := BarTypedMUS.UnmarshalData( ... )
+    return v1, n + n1, err1
+  default:
+		err = com.NewUnexpectedDTMError(dtm)
+    return
+  }
+}
+
+func (s interfaceMUS) Size( ... ) (size int) {
+	if m, ok := v.(mus.MarshallerTyped); ok {
+		return m.SizeTypedMUS()
+	}
+	panic(fmt.Sprintf("%v doesn't implement the mus.MarshallerTyped interface", reflect.TypeOf(v)))
+}
+
+func (s interfaceMUS) Skip( ... ) (n int, err error) {
+	dtm, n, err := typed.DTMSer.Unmarshal( ... )
+	if err != nil {
+		return
+	}
+	var n1 int
+	switch dtm {
+	case FooDTM:
+		n1, err = FooTypedMUS.SkipData( ... )
+	case BarDTM:
+		n1, err = BarTypedMUS.SkipData( ... )
+	default:
+		err = com.NewUnexpectedDTMError(dtm)
+		return
+	}
+	n += n1
+	return
+} 
+```
+
+In this case the user is responsible for implementing `mus.MarshallerTyped` 
+interface by each implementation type.

@@ -1,4 +1,4 @@
-## Imports
+# Imports
 
 Use these imports and aliases in the generated MUS serializers.
 

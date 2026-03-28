@@ -5,18 +5,23 @@
 For all number types the user can specify the encoding.
 
 ```go
-// mus:enc = raw
-int
+// mus:numEnc = varint | raw
+int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64
+
+// mus:numEnc = positive
+int, int8, int16, int32, int64
 ```
 
 Where:
 
-- enc: could be "varint" or "raw".
+- mus:numEnc = varint -> varint.Int
+- mus:numEnc = positive -> varint.PositiveInt
+- mus:numEnc = raw -> raw.Int
 
 Example:
 
 ```go
-// mus:enc = raw.Int
+// mus:numEnc = raw
 type Foo int
 
 type fooSer struct{}
@@ -44,17 +49,6 @@ func (s fooSer) Skip( ... ) (n int, err error) {
 }
 ```
 
-Nested encoding hints are also supported. For example, to specify the 
-encoding for a slice element:
-
-```go
-// mus:elem:enc = raw
-type Foo []int
-
-// This slice serializer will use raw.Int for the int type.
-var sliceQ65A = ord.NewSliceSer(raw.Int)
-```
-
 ## Time
 
 ```go
@@ -64,14 +58,14 @@ time.Time
 
 Where:
 
-- type_unit: sec -> TimeUnix, 
-  milli -> TimeUnixMilli, 
-  macro -> TimeUnixMicro, 
-	nano -> TimeUnixNano, 
-	sec_utc -> TimeUnixUTC, 
-	milli_utc -> TimeUnixMilliUTC, 
-	micro_utc -> TimeUnixMicroUTC, 
-	nano_utc -> TimeUnixNanoUTC 
+- mus:time_unit = sec -> TimeUnix
+- mus:time_unit = milli -> TimeUnixMilli
+- mus:time_unit = micro -> TimeUnixMicro
+- mus:time_unit = nano -> TimeUnixNano
+- mus:time_unit = sec_utc -> TimeUnixUTC
+- mus:time_unit = milli_utc -> TimeUnixMilliUTC
+- mus:time_unit = micro_utc -> TimeUnixMicroUTC
+- mus:time_unit = nano_utc -> TimeUnixNanoUTC
 
 Example:
 
@@ -96,7 +90,7 @@ T
 
 Where:
 
-- vl: com.Validator[T] interface implementation
+- vl: `com.Validator[T]` interface implementation
 
 Example:
 
@@ -110,7 +104,7 @@ type Foo struct {
 
 func (s fooSer) Unmarshal( ... ) (v Foo, n int, err error) {
 	var v1 int
-	v.num, n, err = raw.Int.Unmarshal( ... )
+	v.num, n, err = varint.Int.Unmarshal( ... )
 	if err != nil {
 		return
 	}
@@ -128,26 +122,38 @@ func (s fooSer) Unmarshal( ... ) (v Foo, n int, err error) {
 }
 ```
 
+## Length Encoding
+
+```go
+// mus:lenEnc = ...
+string, array, slice or map
+```
+
+Where:
+
+- mus:lenEnc = varint -> varint.Int
+- mus:lenEnc = positive -> varint.PositiveInt
+- mus:lenEnc = raw -> raw.Int
+
 ## String
 
 String type hints require creating and using an anonymous serializer for that 
 type. 
 
 ```go
-// mus:lenSer = ...
+// mus:lenEnc = ...
 // mus:lenVl = ...
 string
 ```
 
 Where:
 
-- lenSer: mus.Serializer[int] interface implementation
-- lenVl: com.Validator[int] interface implementation
+- mus:lenVl: `com.Validator[int]` interface implementation
 
 Example:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 type Foo string
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
@@ -157,7 +163,7 @@ var str`generated hash value` = ord.NewStringSer(strops.WithLenSer(raw.Int))
 Example valid:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 // mus:lenVl: ValidateLength
 type Foo string
 
@@ -171,25 +177,23 @@ var str`generated hash value` = ord.NewValidStringSer(
 ## Array
 
 ```go
-// mus:lenSer = ...
+// mus:lenEnc = ...
 // mus:elemVl = ...
 [N]T
 ```
 
 Where:
 
-- lenSer: mus.Serializer[int] interface implementation
-- elemVl: com.Validator[T] interface implementation
+- mus:elemVl: `com.Validator[T]` interface implementation
 
 Example:
 
 ```go
-// mus:lenSer = raw.Int
-// mus:elem:enc = raw
+// mus:lenEnc = raw
 type ArrayInt [3]int
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var array`generated hash value` = unsafe.NewArraySer(raw.Int, 
+var array`generated hash value` = unsafe.NewArraySer(varint.Int, 
   arropts.WithLenSer[int](raw.Int), 
 )
 ```
@@ -197,13 +201,12 @@ var array`generated hash value` = unsafe.NewArraySer(raw.Int,
 Example valid:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 // mus:elemVl: ValidateElement
-// mus:elem:enc = raw
 type ArrayInt [3]int
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var array`generated hash value` = unsafe.NewValidArraySer(raw.Int, 
+var array`generated hash value` = unsafe.NewValidArraySer(varint.Int, 
   arropts.WithLenSer[int](raw.Int), 
   arropts.WithElemValidator[int](ValidateElement),
 )
@@ -212,7 +215,7 @@ var array`generated hash value` = unsafe.NewValidArraySer(raw.Int,
 ## Slice
 
 ```go
-// mus:lenSer = ...
+// mus:lenEnc = ...
 // mus:lenVl = ...
 // mus:elemVl = ...
 []T
@@ -220,19 +223,17 @@ var array`generated hash value` = unsafe.NewValidArraySer(raw.Int,
 
 Where:
 
-- lenSer: mus.Serializer[int] interface implementation
-- lenVl: com.Validator[int] interface implementation
-- elemVl: com.Validator[T] interface implementation
+- mus:lenVl: `com.Validator[int]` interface implementation
+- mus:elemVl: `com.Validator[T]` interface implementation
 
 Example:
 
 ```go
-// mus:lenSer = raw.Int
-// mus:elem:enc = raw
+// mus:lenEnc = raw
 type SliceInt []int
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var slice`generated hash value` = ord.NewSliceSer(raw.Int, 
+var slice`generated hash value` = ord.NewSliceSer(varint.Int, 
   slopts.WithLenSer[int](raw.Int), 
 )
 ```
@@ -240,14 +241,13 @@ var slice`generated hash value` = ord.NewSliceSer(raw.Int,
 Example valid:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 // mus:lenVl: ValidateLength
 // mus:elemVl: ValidateElement
-// mus:elem:enc = raw
 type SliceInt []int
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var slice`generated hash value` = ord.NewValidSliceSer(raw.Int, 
+var slice`generated hash value` = ord.NewValidSliceSer(varint.Int, 
   slopts.WithLenSer[int](raw.Int), 
 	slopts.WithLenValidator[int](ValidateLength), 
   slopts.WithElemValidator[int](ValidateElement),
@@ -257,19 +257,18 @@ var slice`generated hash value` = ord.NewValidSliceSer(raw.Int,
 ## Byte Slice
 
 ```go
-// mus:lenSer = ...
+// mus:lenEnc = ...
 // mus:lenVl = ...
 []byte
 ```
 Where:
 
-- lenSer: mus.Serializer[int] interface implementation
-- lenVl: com.Validator[int] interface implementation
+- lenVl: `com.Validator[int]` interface implementation
 
 Example:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 type ByteSlice []byte 
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
@@ -279,7 +278,7 @@ var bs`generated hash value` = ord.NewByteSliceSer(bslops.WithLenSer(raw.Int))
 Example valid:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 // mus:lenVl: ValidateLength
 type ByteSlice []byte 
 
@@ -293,29 +292,27 @@ var bs`generated hash value` = ord.NewValidByteSliceSer(
 ## Map
 
 ```go
-// mus:lenSer = ...
+// mus:lenEnc = ...
 // mus:lenVl = ...
 // mus:keyVl = ...
-// mus:valVl = ...
+// mus:elemVl = ...
 map[K]V
 ```
 
 Where:
 
-- lenSer: mus.Serializer[int] interface implementation
-- lenVl: com.Validator[int] interface implementation
-- keyVl: com.Validator[K] interface implementation
-- valVl: com.Validator[V] interface implementation
+- mus:lenVl: `com.Validator[int]` interface implementation
+- mus:keyVl: `com.Validator[K]` interface implementation
+- mus:elemVl: `com.Validator[V]` interface implementation
 
 Example:
 
 ```go
-// mus:lenSer = raw.Int
-// mus:value:enc = raw
+// mus:lenEnc = raw
 type Map map[string]int 
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var map`generated hash value` = ord.NewMapSer(
+var map`generated hash value` = ord.NewMapSer(ord.String, varint.Int,
 	mapopts.WithLenSer[string, int](raw.Int),
 )
 ```
@@ -323,28 +320,28 @@ var map`generated hash value` = ord.NewMapSer(
 Example valid:
 
 ```go
-// mus:lenSer = raw.Int
+// mus:lenEnc = raw
 // mus:lenVl: ValidateLength
 // mus:keyVl: ValidateKey
-// mus:valVl: ValidateValue
+// mus:elemVl: ValidateValue
 type Map map[string]int 
 
 // Marshal, Unmarshal, Size, Skip methods use this serializer.
-var map`generated hash value` = ord.NewValidMapSer(
-	mapopts.WithLenSer[string, int](raw.Int),
+var map`generated hash value` = ord.NewValidMapSer(ord.String, varint.Int,
+	mapopts.WithLenSer[string, int](varint.Int),
 	mapopts.WithLenValidator[string, int](ValidateLength),
 	mapopts.WithKeyValidator[string, int](ValidateKey),
 	mapopts.WithValueValidator[string, int](ValidateValue),
 )
 ```
 
-## Skip Field
+## Ignore Field
 
-With the `mus:skip` hint, the user can skip a struct field from the serialization 
+With the `mus:ignore` hint, the user can skip a struct field from the serialization 
 process.
 
 ```go
-// mus:skip = true
+// mus:ignore = true
 ```
 
 Example:
@@ -352,7 +349,7 @@ Example:
 ```go
 type Foo struct {
   num int
-  // mus:skip = true
+  // mus:ignore = true
   secret string
 }
 
@@ -373,51 +370,3 @@ func (s fooSer) Skip( ... ) (n int, err error) {
 	return varint.Int.Skip( ... )
 }
 ```
-
-## Nested Hints
-
-Hints may be nested. Example for slice:
-
-```go
-// mus:lenVl = 
-// mus:elem:lenVl = 
-// mus:elem:elem:lenVl = 
-[][]string
-```
-
-Where:
-- first lenVl corresponds to the outer slice
-- second lenVl corresponds to the inner slice
-- third lenVl corresponds to the string
-
-
-Example for map (hash values are fake):
-
-```go
-// mus:lenVl = ValidateMapLength 
-// mus:key:lenVl = ValidateStringLength 
-// mus:value:lenVl = ValidateSliceLength
-// mus:value:elem:enc = raw
-type Map map[string][]int
-
-var strMUTorjOEDFYj3vrvkKR6ZwΞΞ = ord.NewValidStringSer(
-	stropts.WithLenValidator(ValidateStringLength),
-)
-
-var sliceΔNqGN8oSY9KKXDASz9gfZwΞΞ = ord.NewValidSliceSer(raw.Int, 
-	slopts.WithLenValidator[int](ValidateSliceLength),
-)
-
-// This map serializer uses the generated serializers for the key and value types.
-var mapFΣQi8gWhMtB5OLKuuT2gOgΞΞ = ord.NewValidMapSer(
-	strMUTorjOEDFYj3vrvkKR6ZwΞΞ, sliceΔNqGN8oSY9KKXDASz9gfZwΞΞ,
-	mapopts.WithLenValidator[string, []int](ValidateMapLength),
-)
-```
-
-Where:
-- first lenVl corresponds to the map
-- second lenVl corresponds to the key string
-- third lenVl corresponds to the value slice
-- fourth enc corresponds to the int
-

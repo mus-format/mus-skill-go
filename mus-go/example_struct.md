@@ -1,11 +1,11 @@
-## Struct Example
+# Struct Example
 
 ```go
 type Foo struct {
 	// mus:vl = ValidateNum
 	num int 
 	str string
-	// mus:lenSer = raw.Int
+	// mus:lenEnc = raw
 	sl  []int 
 }
 

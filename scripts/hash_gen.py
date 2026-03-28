@@ -6,7 +6,7 @@ def get_mus_anon_var_name(prefix, data):
     Generates a unique Go identifier for an anonymous MUS serializer.
     
     Args:
-        prefix: The type prefix (e.g., 'str', 'map', 'slice').
+        prefix: The type prefix (e.g., 'string', 'map', 'slice').
         data: The deterministic string describing the type and its options.
         
     Returns:

@@ -1,4 +1,4 @@
-## Defined Type Example
+# Defined Type Example
 
 ```go
 type Foo int
@@ -10,12 +10,11 @@ func (s fooMUS) Marshal(v Foo, bs []byte) (n int) {
 }
 
 func (s fooMUS) Unmarshal(bs []byte) (v Foo, n int, err error) {
-	var v1 int
-	v1, n, err = varint.Int.Unmarshal(bs)
+	tmp, n, err := varint.Int.Unmarshal(bs)
 	if err != nil {
 		return
 	}
-	v = Foo(v1)
+	v = Foo(tmp)
 	return
 }
 

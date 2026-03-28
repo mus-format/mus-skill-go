@@ -1,8 +1,8 @@
-## Predefined Constructors
+# Predefined Constructors
 
 Constructors are used to create serializers with additional options.
 
-### ord
+## ord
 
 Contains constructors for the following types:
 
@@ -25,3 +25,12 @@ Contains constructors for the following types:
 - `string`: 
   ord.NewStringSer(opts ...strops.SetOption) stringSer
   ord.NewValidStringSer(opts ...strops.SetOption) validStringSer
+
+
+## unsafe
+
+Contains constructors for the following types:
+
+- `string`:
+  NewStringSer(opts ...stropts.SetOption) stringSer
+  NewValidStringSer(opts ...stropts.SetOption) validStringSer

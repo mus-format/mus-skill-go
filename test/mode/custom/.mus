@@ -1,0 +1,10 @@
+mode: custom
+int: positive
+uint: raw
+float: unsafe
+byte: raw
+bool: ord
+string: unsafe
+byte_slice: ord
+time: unsafe
+time_ser: TimeUnixMicro

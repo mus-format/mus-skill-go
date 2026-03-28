@@ -26,5 +26,5 @@ except for `time_ser` which specifies the serializer name within the package.
 
 The generator resolves serializers in the following order of priority:
 
-1. **Explicit Hints**: `// mus:` hints (e.g., `// mus:enc = raw`) in the source code.
+1. **Explicit Hints**: `// mus:` hints (e.g., `// mus:numEnc = raw`) in the source code.
 2. **Mode Settings**: Settings defined by the selected built-in or custom mode.

@@ -1,6 +1,7 @@
 # mus-skill-go: AI-Driven MUS Serializer Generation
 
-This repository provides a specialized AI skill to generate high-performance MUS serializers for Go types.
+This repository provides a specialized AI skill to generate high-performance MUS 
+serializers for Go.
 
 ## Contents
 
@@ -13,7 +14,7 @@ This repository provides a specialized AI skill to generate high-performance MUS
   - [User Hints](#user-hints)
     - [Serializer Name](#serializer-name)
     - [Serializer Path](#serializer-path)
-    - [Skip Field](#skip-field)
+    - [Ignore Field](#ignore-field)
     - [Number Encoding](#number-encoding)
     - [Interface Serializer](#interface-serializer)
     - [Validation](#validation)
@@ -25,7 +26,8 @@ This repository provides a specialized AI skill to generate high-performance MUS
 
 ## Setup
 
-Clone this repository into your project's `.agent` directory:
+Clone this repository into your project's agent directory (e.g. `.agent` or 
+`.agents`):
 
 ```bash
 git clone https://github.com/mus-format/mus-skill-go .agent/mus-skill-go
@@ -45,10 +47,10 @@ type Bar int
 
 ## Usage
 
-Ask the AI agent to generate MUS serializers for your types. For example:
+Ask the AI agent to generate MUS serializers. For example:
 
 ```text
-Generate MUS serializers for the types found in the dto package.
+Generate MUS serializers for the types found in the <file_name>.go file.
 ```
 
 ## What to Expect
@@ -58,9 +60,9 @@ The AI agent will generate the following files in your target and related packag
 - **`mus.ai.gen.go`**: Contains all generated serializers, including 
   implementation for defined types, structs, and interfaces.
 - **`mus.ai.gen_test.go`**: Contains comprehensive unit tests for your serializers, 
-  including validation failure cases.
+  including validation logic.
 
-After generation, you should always verify the output:
+After generation, you should always verify the output and run:
 
 ```bash
 go test ./...
@@ -73,10 +75,10 @@ To customize the generation process use hints.
 ### Serializer Name
 
 ```go
-// mus:name = AwesomeFooMUS
+// mus:name = CustomFoo
 type Foo string
 
-// The generated serializer will be named AwesomeFooMUS instead of FooMUS.
+// The generated serializer will be named CustomFooMUS instead of FooMUS.
 ```
 
 ### Serializer Path
@@ -88,37 +90,30 @@ type Foo string
 // path hint specifies the location of the type serializer.
 ```
 
-### Skip Field
+### Ignore Field
 
 ```go
 type Foo struct {
 	num int
-    // mus:skip = true
+    // mus:ignore = true
     str string
 }
 
-// Skipped field will be skipped from the serialization process.
+// Ignored field will be skipped from the serialization process.
 ```
 
 ### Number Encoding
 
 ```go
-// mus:enc = raw
+// mus:numEnc = raw
 type Foo int
 
 type Bar struct {
-  // mus:enc = raw
+  // mus:numEnc = raw
   num int
 }
 
-// mus:elem:enc = raw
-type Zoo []int
-
-// mus:key:enc = raw
-// mus:value:enc = raw
-type Car map[int]int
-
-// Raw package will be used instead of a default varint in all 3 cases.
+// Raw package will be used instead of a default varint.
 ```
 
 ### Interface Serializer
@@ -162,24 +157,15 @@ type Zoo struct {
 
   // mus:lenVl = ValidateLength
   // mus:keyVl = ValidateKey
-  // mus:valueVl = ValidateVal
+  // mus:elemVl = ValidateValue
   mp map[string]int
-    
-  // mus:elemVl = ValidateSlice
-  // mus:elem:elemVl = ValidateElement
-  nestedSlice [][]int
-    
-  // mus:key:lenVl = ValidateLength
-  // mus:value:lenVl = ValidateLength
-  // mus:value:elemVl = ValidateElement
-  nestedMap map[string][]int
 }
 ```
 
 Validation function should be defined like:
 
 ```go
-func ValidateSomething(v T) error { ... }
+func Validate(T) error { ... }
 ```
 
 Where `T` is the type being validated.
@@ -254,4 +240,4 @@ configuration:
 - **Manual DTMs**: For interfaces, define DTM constants yourself for better 
   stability.
 - **Validator Signatures**: Ensure your validator functions match the 
-  `func(v T) error` signature.
+  `func(T) error` signature.

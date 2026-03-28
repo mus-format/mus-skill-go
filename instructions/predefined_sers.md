@@ -1,9 +1,9 @@
-## Predefined Serializers
+# Predefined Serializers
 
 There are a set of predefined serializers that can be used to build more complex 
 serializers. Let's see on packages.
 
-### varint
+## varint
 
 Contains Varint serializers for the following number types:
 
@@ -20,7 +20,7 @@ Contains Varint serializers for the following number types:
 - `float32`: varint.Float32
 - `float64`: varint.Float64
 
-### raw
+## raw
 
 Contains Raw serializers for the following number types:
 
@@ -40,7 +40,7 @@ Contains Raw serializers for the following number types:
   raw.TimeUnixNano, raw.TimeUnixUTC, raw.TimeUnixMilliUTC, raw.TimeUnixMicroUTC,
 	raw.TimeUnixNanoUTC
 
-### ord
+## ord
 
 Contains serializers for the following types:
 
@@ -48,7 +48,7 @@ Contains serializers for the following types:
 - `[]byte`: ord.ByteSlice
 - `string`: ord.String
 
-### unsafe
+## unsafe
 
 Contains serializers for the following types:
 

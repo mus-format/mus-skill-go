@@ -1,4 +1,4 @@
-## Struct Embedding Example
+# Struct Embedding Example
 
 ```go
 type Bar struct {

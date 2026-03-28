@@ -1,4 +1,4 @@
-## Testing
+# Testing
 
 For each generated serializer, create a unit test in `mus.ai.gen_test.go` file 
 using `github.com/mus-format/mus-go/test` package.

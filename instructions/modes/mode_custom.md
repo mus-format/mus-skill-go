@@ -4,7 +4,6 @@ The `custom` mode allows the user to define their own generation options by
 providing a `.mus` file:
 
 ```text
-# .mus
 mode: custom
 int: varint
 uint: varint

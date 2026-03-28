@@ -1,4 +1,4 @@
-## Template
+# Template
 
 Template of the MUS stream serializer for the user provided type. Use predefined 
 or another generated MUS stream serializers to process the fields (if the type 
