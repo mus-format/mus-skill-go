@@ -75,7 +75,7 @@ type Bar int
 
 ## Usage
 
-Ask the AI agent to generate code:
+Prompt:
 
 ```text
 Generate MUS serializers for the types found in the <file_name>.go file.
