@@ -75,7 +75,7 @@ type Bar int
 
 ## Usage
 
-Ask the AI agent to generate MUS serializers. For example:
+Ask the AI agent to generate code:
 
 ```text
 Generate MUS serializers for the types found in the <file_name>.go file.
@@ -90,7 +90,7 @@ The AI agent will generate the following files in your target and related packag
 - **`mus.ai.gen_test.go`**: Contains comprehensive unit tests for your serializers, 
   including validation logic.
 
-After generation, you should always verify the output and run:
+After generation, you should always verify the generated tests and run:
 
 ```bash
 go test ./...
@@ -105,18 +105,18 @@ To customize the generation process use hints.
 ```go
 // mus:name = CustomFoo
 type Foo string
-
-// The generated serializer will be named CustomFooMUS instead of FooMUS.
 ```
+
+ The generated serializer will be named CustomFooMUS instead of FooMUS.
 
 ### Serializer Path
 
 ```go
 // mus:path = github.com/user/repo/package
 type Foo string
-
-// path hint specifies the location of the type serializer.
 ```
+
+The path hint specifies the location of the type serializer.
 
 ### Ignore Field
 
@@ -126,9 +126,9 @@ type Foo struct {
     // mus:ignore = true
     str string
 }
-
-// Ignored field will be skipped from the serialization process.
 ```
+
+Ignored field will be skipped from the serialization process.
 
 ### Number Encoding
 
@@ -140,9 +140,9 @@ type Bar struct {
   // mus:numEnc = raw
   num int
 }
-
-// Raw package will be used instead of a default varint.
 ```
+
+Raw package will be used instead of a default varint.
 
 ### Interface Serializer
 
@@ -153,9 +153,6 @@ type MyInterface interface { ... }
 
 You should define DTMs for ALL implementation types, or for none of them (in
 this case DTMs will be generated automatically).
-
-It's recommended to define DTMs yourself, because it's more flexible and 
-maintainable.
 
 ### Validation
 
@@ -200,8 +197,7 @@ Where `T` is the type being validated.
 
 ## Serialization Modes
 
-There are 4 built-in serialization modes that control how the AI generates code 
-(e.g., whether to use `unsafe` or not).
+There are 4 built-in serialization modes that control how the AI generates code.
 
 1. **Safe (Default)**: Optimized for safety. It does NOT use the `unsafe` 
    package. Numbers use `varint` encoding by default.
@@ -216,11 +212,9 @@ So you can ask the AI agent to generate code, for example, in "unsafe" mode.
 
 #### .mus Configuration File
 
-For the **Custom** mode (or to override defaults in any mode), you can place a 
-`.mus` file in your project. For example:
+For the **Custom** mode place a `.mus` file in your project. For example:
 
 ```yaml
-# .mus
 mode: custom
 int: varint
 uint: varint
