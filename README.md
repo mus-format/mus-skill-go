@@ -51,14 +51,15 @@ npx skills add github.com/mus-format/mus-skill-go
 
 ### Dependencies
 
-Ensure you have the required MUS library installed in your Go project:
+Ensure you have the required MUS library (v0.10.0 or later) installed in your 
+Go project:
 
 ```bash
 # buffer-based
-go get github.com/mus-format/mus-go
+go get github.com/mus-format/mus-go@v0.10.0
 
 # or stream-based
-go get github.com/mus-format/mus-stream-go
+go get github.com/mus-format/mus-stream-go@v0.10.0
 ```
 
 ## Supported Types
