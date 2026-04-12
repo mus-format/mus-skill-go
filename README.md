@@ -1,11 +1,11 @@
-# mus-skill-go: AI-Driven MUS Serializer Generation
+# mus-skill-go: AI-powered code generation for MUS
 
-This repository provides a specialized AI skill to generate high-performance 
-[MUS](https://ymz-ncnk.medium.com/mus-serialization-format-20f833df12d5) serializers for Go.
+A specialized AI skill for generating high-performance [MUS](https://ymz-ncnk.medium.com/mus-serialization-format-20f833df12d5) 
+serialization code in Go.
 
 ## Contents
 
-- [mus-skill-go: AI-Driven MUS Serializer Generation](#mus-skill-go-ai-driven-mus-serializer-generation)
+- [mus-skill-go: AI-powered code generation for MUS](#mus-skill-go-ai-powered-code-generation-for-mus)
   - [Contents](#contents)
   - [Setup](#setup)
     - [Prerequisites](#prerequisites)
